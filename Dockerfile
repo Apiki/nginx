@@ -23,12 +23,14 @@ RUN cd  /openresty-${OPENRESTY_VERSION} && /usr/bin/wget https://github.com/apac
 && tar -xzf ${PSOL_VERSION}.tar.gz
 
 RUN cd /openresty-${OPENRESTY_VERSION} \
-&& git clone https://github.com/FRiCKLE/ngx_cache_purge.git ngx_cache_purge-2.3
+&& git clone https://github.com/FRiCKLE/ngx_cache_purge.git ngx_cache_purge-2.3 \
+&& git clone https://github.com/vozlt/nginx-module-vts.git
 
 RUN cd /openresty-${OPENRESTY_VERSION} \
 && /openresty-${OPENRESTY_VERSION}/configure \
 --add-module=/openresty-${OPENRESTY_VERSION}/incubator-pagespeed-ngx-${NPS_VERSION} \
 --add-module=/openresty-${OPENRESTY_VERSION}/ngx_cache_purge-2.3 \
+--add-module=/openresty-${OPENRESTY_VERSION}/nginx-module-vts \
 --with-http_stub_status_module \
 --with-http_v2_module --with-openssl=/openresty-${OPENRESTY_VERSION}/openssl-${OPEN_SSL} \
 --with-ipv6 \
