@@ -3,7 +3,7 @@ FROM debian:jessie
 MAINTAINER Apiki Team Maintainers "mesaque.silva@apiki.com"
 
 ENV DEBIAN_FRONTEND noninteractive
-ENV NGINX_PATH /usr/local/openresty/nginx/conf
+ENV NGINX_PATH /WORDPRESS/openresty
 ENV NPS_VERSION 1.13.35.2-stable
 ENV OPENRESTY_VERSION 1.15.8.3
 ENV OPEN_SSL 1.1.1d
@@ -28,6 +28,7 @@ RUN cd /openresty-${OPENRESTY_VERSION} \
 
 RUN cd /openresty-${OPENRESTY_VERSION} \
 && /openresty-${OPENRESTY_VERSION}/configure \
+--prefix=${NGINX_PATH} \
 --add-module=/openresty-${OPENRESTY_VERSION}/incubator-pagespeed-ngx-${NPS_VERSION} \
 --add-module=/openresty-${OPENRESTY_VERSION}/ngx_cache_purge-2.3 \
 --add-module=/openresty-${OPENRESTY_VERSION}/nginx-module-vts \
@@ -38,15 +39,16 @@ RUN cd /openresty-${OPENRESTY_VERSION} \
 && /usr/bin/make && /usr/bin/make install
 
 # forward request and error logs to docker log collector
-RUN ln -sf /dev/stdout /usr/local/openresty/nginx/logs/access.log \
-	&& ln -sf /dev/stderr /usr/local/openresty/nginx/logs/error.log
+RUN ln -sf /dev/stdout ${NGINX_PATH}/nginx/logs/access.log \
+	&& ln -sf /dev/stderr ${NGINX_PATH}/nginx/logs/error.log
 
-RUN ln -s /usr/local/openresty/nginx/sbin/nginx /usr/bin/nginx
+RUN ln -s ${NGINX_PATH}/nginx/sbin/nginx /usr/bin/nginx
+RUN ln -s ${NGINX_PATH}/nginx/conf /etc/nginx
 
 EXPOSE 80 443
 
 RUN rm -rf /openresty-${OPENRESTY_VERSION}
 RUN rm -rf /openresty-${OPENRESTY_VERSION}.tar.gz
 
-WORKDIR $NGINX_PATH/
-CMD ["/usr/local/openresty/nginx/sbin/nginx", "-g", "daemon off;"]
+WORKDIR ${NGINX_PATH}/nginx/conf
+CMD ["/WORDPRESS/openresty/nginx/sbin/nginx", "-g", "daemon off;"]
